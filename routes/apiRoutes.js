@@ -5,12 +5,13 @@ module.exports = function(app){
 app.get("/api/workouts", (req, res) => {
 
     const workout = new db.Workout(req.body);
-    workout.getTotalDuration();
     
     db.Workout.find({})
     .then(dbWorkout => {
-    
-        res.json(dbWorkout);
+        for(var i = 0; i < dbWorkout.length; i++){
+            Object.assign(dbWorkout[i], { totalDuration : workout.getTotalDuration(dbWorkout)});
+        }
+        return res.json(dbWorkout);
     })
     .catch(err => {
         res.json(err);
@@ -18,15 +19,14 @@ app.get("/api/workouts", (req, res) => {
 });
 
 app.put("/api/workouts/:id", (req, res) => {
-
     const workout = new db.Workout(req.body);
-    workout.getTotalDuration();
-    console.log("totalDuration", workout.getTotalDuration());
-    db.Workout.update({ _id : req.params.id }, workout, { $push: { exercises : req.body } }, 
+
+    db.Workout.update({ _id : req.params.id }, { $push: { exercises : req.body } }, 
     (err, data)=> {
         if (err) {
             res.send(err);
           } else {
+            console.log(data);
             res.send(data);
           }
         
@@ -34,22 +34,19 @@ app.put("/api/workouts/:id", (req, res) => {
 }); 
 
 app.post("/api/workouts", ({ body }, res) => {
-   
-    const workout = new db.Workout(body);
-    workout.getTotalDuration();
-
-    db.Workout.create(workout, (err, data) => {
-        if(err) {
-            res.send(err);
-        }
-        else {
-            
-            res.send(data);
-        }
-    });
-});
+    
+    db.Workout.create(body).then(dbWorkout => {
+        
+        console.log(dbWorkout);
+        res.json(dbWorkout);
+      })
+      .catch(err => {
+        res.json(err);
+      });
+  });
 
 app.get("/api/workouts/range", (req, res) => {
+
     db.Workout.find({})
     .then(dbWorkout => {
         res.json(dbWorkout);

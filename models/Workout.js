@@ -37,21 +37,13 @@ const WorkoutSchema = new Schema ({
 
 });
 
-WorkoutSchema.methods.getTotalDuration = function() {
-
-    let duration = Workout.find({}).then(function(data){
-        
-            let durationArr = data[data.length -1].exercises.map(exercise => exercise.duration);
-            totalDuration = durationArr.reduce(function(a, b) {
-                return a + b;
-            }, 0);
-            return totalDuration;
-        
-    });
-    console.log(duration)
-    return duration;
+WorkoutSchema.methods.getTotalDuration = function(data) {
+    
+        let durationArr = data[data.length - 1].exercises.map(exercise => exercise.duration);
+        return this.totalDuration = durationArr.reduce(function(a, b) {
+            return a + b;
+        }, 0);
 };
-
 
 const Workout = mongoose.model("Workout", WorkoutSchema);
 
