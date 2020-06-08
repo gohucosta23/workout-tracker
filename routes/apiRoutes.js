@@ -3,8 +3,13 @@ const db = require("../models");
 module.exports = function(app){
 
 app.get("/api/workouts", (req, res) => {
+
+    const workout = new db.Workout(req.body);
+    workout.getTotalDuration();
+    
     db.Workout.find({})
     .then(dbWorkout => {
+    
         res.json(dbWorkout);
     })
     .catch(err => {
@@ -13,23 +18,32 @@ app.get("/api/workouts", (req, res) => {
 });
 
 app.put("/api/workouts/:id", (req, res) => {
-    db.Workout.update({ _id : req.params.id }, { $push: { exercises : req.body } }, 
+
+    const workout = new db.Workout(req.body);
+    workout.getTotalDuration();
+    console.log("totalDuration", workout.getTotalDuration());
+    db.Workout.update({ _id : req.params.id }, workout, { $push: { exercises : req.body } }, 
     (err, data)=> {
         if (err) {
             res.send(err);
           } else {
             res.send(data);
           }
+        
     });
-});
+}); 
 
 app.post("/api/workouts", ({ body }, res) => {
-    console.log(body);
-    db.Workout.create({ body }, (err, data) => {
+   
+    const workout = new db.Workout(body);
+    workout.getTotalDuration();
+
+    db.Workout.create(workout, (err, data) => {
         if(err) {
             res.send(err);
         }
         else {
+            
             res.send(data);
         }
     });
