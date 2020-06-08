@@ -33,9 +33,9 @@ app.put("/api/workouts/:id", (req, res) => {
     });
 }); 
 
-app.post("/api/workouts", ({ body }, res) => {
+app.post("/api/workouts", (req, res) => {
     
-    db.Workout.create(body).then(dbWorkout => {
+    db.Workout.create(req.body).then(dbWorkout => {
         
         console.log(dbWorkout);
         res.json(dbWorkout);
